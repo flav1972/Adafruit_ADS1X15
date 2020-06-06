@@ -112,7 +112,6 @@ static uint16_t readRegister(uint8_t i2cAddress, uint8_t reg) {
 Adafruit_ADS1015::Adafruit_ADS1015(uint8_t i2cAddress) {
   m_i2cAddress = i2cAddress;
   m_conversionDelay = ADS1015_CONVERSIONDELAY;
-  m_bitShift = 4;
   m_gain = GAIN_TWOTHIRDS; /* +/- 6.144V range (limited to VDD +0.3V max!) */
 }
 
@@ -126,7 +125,6 @@ Adafruit_ADS1015::Adafruit_ADS1015(uint8_t i2cAddress) {
 Adafruit_ADS1115::Adafruit_ADS1115(uint8_t i2cAddress) {
   m_i2cAddress = i2cAddress;
   m_conversionDelay = ADS1115_CONVERSIONDELAY;
-  m_bitShift = 0;
   m_gain = GAIN_TWOTHIRDS; /* +/- 6.144V range (limited to VDD +0.3V max!) */
 }
 
@@ -206,9 +204,7 @@ uint16_t Adafruit_ADS1015::readADC_SingleEnded(uint8_t channel) {
   // Wait for the conversion to complete
   delay(m_conversionDelay);
 
-  // Read the conversion results
-  // Shift 12-bit results right 4 bits for the ADS1015
-  return readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT) >> m_bitShift;
+  return readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT);
 }
 
 /**************************************************************************/
@@ -247,19 +243,7 @@ int16_t Adafruit_ADS1015::readADC_Differential_0_1() {
   delay(m_conversionDelay);
 
   // Read the conversion results
-  uint16_t res =
-      readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT) >> m_bitShift;
-  if (m_bitShift == 0) {
-    return (int16_t)res;
-  } else {
-    // Shift 12-bit results right 4 bits for the ADS1015,
-    // making sure we keep the sign bit intact
-    if (res > 0x07FF) {
-      // negative number - extend the sign to 16th bit
-      res |= 0xF000;
-    }
-    return (int16_t)res;
-  }
+  return((int16_t)readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT));
 }
 
 /**************************************************************************/
@@ -298,19 +282,7 @@ int16_t Adafruit_ADS1015::readADC_Differential_2_3() {
   delay(m_conversionDelay);
 
   // Read the conversion results
-  uint16_t res =
-      readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT) >> m_bitShift;
-  if (m_bitShift == 0) {
-    return (int16_t)res;
-  } else {
-    // Shift 12-bit results right 4 bits for the ADS1015,
-    // making sure we keep the sign bit intact
-    if (res > 0x07FF) {
-      // negative number - extend the sign to 16th bit
-      res |= 0xF000;
-    }
-    return (int16_t)res;
-  }
+  return((int16_t)readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT));
 }
 
 /**************************************************************************/
@@ -358,9 +330,7 @@ void Adafruit_ADS1015::startComparator_SingleEnded(uint8_t channel,
   }
 
   // Set the high threshold register
-  // Shift 12-bit results left 4 bits for the ADS1015
-  writeRegister(m_i2cAddress, ADS1015_REG_POINTER_HITHRESH,
-                threshold << m_bitShift);
+  writeRegister(m_i2cAddress, ADS1015_REG_POINTER_HITHRESH, threshold);
 
   // Write config register to the ADC
   writeRegister(m_i2cAddress, ADS1015_REG_POINTER_CONFIG, config);
@@ -380,17 +350,5 @@ int16_t Adafruit_ADS1015::getLastConversionResults() {
   delay(m_conversionDelay);
 
   // Read the conversion results
-  uint16_t res =
-      readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT) >> m_bitShift;
-  if (m_bitShift == 0) {
-    return (int16_t)res;
-  } else {
-    // Shift 12-bit results right 4 bits for the ADS1015,
-    // making sure we keep the sign bit intact
-    if (res > 0x07FF) {
-      // negative number - extend the sign to 16th bit
-      res |= 0xF000;
-    }
-    return (int16_t)res;
-  }
+  return((int16_t)readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT));
 }

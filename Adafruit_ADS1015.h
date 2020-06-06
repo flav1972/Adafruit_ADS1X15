@@ -145,7 +145,6 @@ protected:
   // Instance-specific properties
   uint8_t m_i2cAddress;      ///< the I2C address
   uint8_t m_conversionDelay; ///< conversion deay
-  uint8_t m_bitShift;        ///< bit shift amount
   adsGain_t m_gain;          ///< ADC gain
 
 public:

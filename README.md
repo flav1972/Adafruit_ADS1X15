@@ -17,6 +17,10 @@ Adafruit invests time and resources providing this open source code, please
 support Adafruit and open-source hardware by purchasing products from
 [Adafruit](https://www.adafruit.com)!
 
+## Difference whith Adafruit version
+
+This version of the library does not shifts bits right for ADS1015. For this device the 4 lower end bits are always 0.
+
 ## License
 
  BSD license, all text above must be included in any redistribution.
